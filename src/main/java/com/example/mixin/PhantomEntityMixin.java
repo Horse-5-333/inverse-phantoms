@@ -62,10 +62,14 @@ public abstract class PhantomEntityMixin implements SmokeDazeable {
             }
 
             if (this.dazeTicks == 0 && this.enrageFrenzyTicks == 0 && this.enrageApproachTicks == 0 && this.smokeImmunityTicks == 0) {
-                if (CampfireBlock.isSmokeyPos(phantom.level(), phantom.blockPosition())) {
-                    this.dazeTicks = 60; // 3 seconds
-                    this.smokeImmunityTicks = 400; // 20 seconds of immunity
-                    this.dazeCenter = phantom.blockPosition();
+                if (phantom.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+                    if (serverLevel.getGameRules().get(com.example.InvertedPhantomsMod.PHANTOM_BEHAVIOR_TWEAKS)) {
+                        if (CampfireBlock.isSmokeyPos(phantom.level(), phantom.blockPosition())) {
+                            this.dazeTicks = 60; // 3 seconds
+                            this.smokeImmunityTicks = 400; // 20 seconds of immunity
+                            this.dazeCenter = phantom.blockPosition();
+                        }
+                    }
                 }
             }
         }

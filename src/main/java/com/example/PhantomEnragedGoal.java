@@ -17,6 +17,8 @@ public class PhantomEnragedGoal extends Goal {
 
     @Override
     public boolean canUse() {
+        if (!(this.phantom.level() instanceof net.minecraft.server.level.ServerLevel serverLevel)) return false;
+        if (!serverLevel.getGameRules().get(InvertedPhantomsMod.PHANTOM_BEHAVIOR_TWEAKS)) return false;
         SmokeDazeable state = (SmokeDazeable) this.phantom;
         return (state.getEnrageApproachTicks() > 0 || state.getEnrageFrenzyTicks() > 0) && this.phantom.getTarget() != null;
     }

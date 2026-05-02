@@ -12,7 +12,11 @@
 	},
 	"icon": "assets/inverted_phantoms/icon.png",
 	"environment": "*",
-	"entrypoints": {},
+	"entrypoints": {
+		"main": [
+			"com.example.InvertedPhantomsMod"
+		]
+	},
 	"mixins": [
 		"inverted_phantoms.mixins.json",
 		{

@@ -17,6 +17,8 @@ public class PhantomDazeGoal extends Goal {
 
     @Override
     public boolean canUse() {
+        if (!(this.phantom.level() instanceof net.minecraft.server.level.ServerLevel serverLevel)) return false;
+        if (!serverLevel.getGameRules().get(InvertedPhantomsMod.PHANTOM_BEHAVIOR_TWEAKS)) return false;
         return ((SmokeDazeable) this.phantom).getDazeTicks() > 0;
     }
 
