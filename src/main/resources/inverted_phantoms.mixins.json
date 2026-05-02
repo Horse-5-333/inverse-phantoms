@@ -1,9 +1,11 @@
 {
 	"required": true,
 	"package": "com.example.mixin",
-	"compatibilityLevel": "JAVA_25",
+	"compatibilityLevel": "JAVA_21",
 	"mixins": [
-		"ExampleMixin"
+		"ServerPlayerMixin",
+		"PhantomSpawnerMixin",
+		"PhantomEntityMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
