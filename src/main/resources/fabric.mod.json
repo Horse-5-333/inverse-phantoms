@@ -8,13 +8,13 @@
 		"Horse_5_333"
 	],
 	"contact": {
-		"sources": "https://github.com/Horse_5_333/inverted_phantoms"
+		"sources": "https://github.com/Horse_5_333/inverse-phantoms"
 	},
 	"icon": "assets/inverted_phantoms/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"com.example.InvertedPhantomsMod"
+			"com.horse5333.invertedphantoms.InvertedPhantomsMod"
 		]
 	},
 	"mixins": [
@@ -26,7 +26,7 @@
 	],
 	"depends": {
 		"fabricloader": ">=0.19.2",
-		"minecraft": "~26.1.2",
+		"minecraft": ">=26.0.0 <27.0.0",
 		"java": ">=21",
 		"fabric-api": "*"
 	}

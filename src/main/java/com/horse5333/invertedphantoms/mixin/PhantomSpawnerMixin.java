@@ -1,6 +1,6 @@
-package com.example.mixin;
+package com.horse5333.invertedphantoms.mixin;
 
-import com.example.NarcolepsyTracker;
+import com.horse5333.invertedphantoms.NarcolepsyTracker;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;

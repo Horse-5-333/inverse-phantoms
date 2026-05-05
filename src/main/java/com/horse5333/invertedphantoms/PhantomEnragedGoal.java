@@ -1,6 +1,6 @@
-package com.example;
+package com.horse5333.invertedphantoms;
 
-import com.example.mixin.PhantomAccessor;
+import com.horse5333.invertedphantoms.mixin.PhantomAccessor;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.monster.Phantom;

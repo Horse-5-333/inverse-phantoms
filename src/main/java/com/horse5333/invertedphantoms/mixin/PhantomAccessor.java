@@ -1,4 +1,4 @@
-package com.example.mixin;
+package com.horse5333.invertedphantoms.mixin;
 
 import net.minecraft.world.entity.monster.Phantom;
 import net.minecraft.world.phys.Vec3;

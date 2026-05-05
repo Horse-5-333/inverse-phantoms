@@ -1,7 +1,8 @@
-package com.example.mixin;
+package com.horse5333.invertedphantoms.mixin;
 
-import com.example.NarcolepsyTracker;
-import net.minecraft.nbt.CompoundTag;
+import com.horse5333.invertedphantoms.NarcolepsyTracker;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.ServerStatsCounter;
 import net.minecraft.stats.Stats;
@@ -37,12 +38,12 @@ public abstract class ServerPlayerMixin implements NarcolepsyTracker {
     }
 
     @Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
-    private void onAddAdditionalSaveData(CompoundTag nbt, CallbackInfo ci) {
-        nbt.putInt("OversleepTicks", this.oversleepTicks);
+    private void onAddAdditionalSaveData(ValueOutput output, CallbackInfo ci) {
+        output.putInt("OversleepTicks", this.oversleepTicks);
     }
 
     @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
-    private void onReadAdditionalSaveData(CompoundTag nbt, CallbackInfo ci) {
-        nbt.getInt("OversleepTicks").ifPresent(val -> this.oversleepTicks = val);
+    private void onReadAdditionalSaveData(ValueInput input, CallbackInfo ci) {
+        input.getInt("OversleepTicks").ifPresent(val -> this.oversleepTicks = val);
     }
 }

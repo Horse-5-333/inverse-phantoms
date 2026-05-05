@@ -1,4 +1,4 @@
-package com.example;
+package com.horse5333.invertedphantoms;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleBuilder;
@@ -13,6 +13,6 @@ public class InvertedPhantomsMod implements ModInitializer {
     public void onInitialize() {
         PHANTOM_BEHAVIOR_TWEAKS = GameRuleBuilder.forBoolean(true)
             .category(GameRuleCategory.MOBS)
-            .buildAndRegister(Identifier.fromNamespaceAndPath("inverted_phantoms", "phantomBehaviorTweaks"));
+            .buildAndRegister(Identifier.fromNamespaceAndPath("inverted_phantoms", "phantom_behavior_tweaks"));
     }
 }

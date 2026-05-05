@@ -1,6 +1,6 @@
 {
 	"required": true,
-	"package": "com.example.client.mixin",
+	"package": "com.horse5333.invertedphantoms.client.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"client": [
 		"ExampleClientMixin"

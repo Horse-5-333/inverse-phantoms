@@ -1,4 +1,4 @@
-package com.example.client;
+package com.horse5333.invertedphantoms.client;
 
 import net.fabricmc.api.ClientModInitializer;
 
