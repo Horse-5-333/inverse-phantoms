@@ -53,8 +53,8 @@ public class PhantomVibrationCallback implements VibrationSystem.User {
     public boolean canReceiveVibration(ServerLevel level, BlockPos pos,
                                        Holder<GameEvent> event, GameEvent.Context context) {
         if (!level.getGameRules().get(InvertedPhantomsMod.PHANTOM_BEHAVIOR_TWEAKS)) return false;
-        // Ignore our own footsteps
-        if (context.sourceEntity() == this.phantom) return false;
+        // Ignore any sounds made by Phantoms (flapping, taking damage) so they don't scare each other
+        if (context.sourceEntity() instanceof Phantom) return false;
         return true;
     }
 
@@ -66,8 +66,10 @@ public class PhantomVibrationCallback implements VibrationSystem.User {
                                    float receivingDistance) {
         SmokeDazeable state = (SmokeDazeable) this.phantom;
 
-        // Already scared — don't stack
-        if (state.getScaredTicks() > 0) return;
+        // Already scared, dazed, or currently enraged — don't stack reactions
+        if (state.getScaredTicks() > 0 || state.getDazeTicks() > 0 || state.getEnrageApproachTicks() > 0 || state.getEnrageFrenzyTicks() > 0) {
+            return;
+        }
 
         // Count nearby phantoms (including self) within 40 blocks
         int groupSize = level.getEntitiesOfClass(

@@ -9,6 +9,7 @@ import java.util.EnumSet;
 
 public class PhantomEnragedGoal extends Goal {
     private final Phantom phantom;
+    private int successfulHits = 0;
 
     public PhantomEnragedGoal(Phantom phantom) {
         this.phantom = phantom;
@@ -42,11 +43,19 @@ public class PhantomEnragedGoal extends Goal {
                 if (state.getEnrageFrenzyTicks() == 0 && state.getEnrageApproachTicks() > 0) {
                     state.setEnrageApproachTicks(0); // End approach
                     state.setEnrageFrenzyTicks(100); // Start 5 seconds of frenzy
+                    this.successfulHits = 0; // Reset hit counter
                 }
 
-                // Deal damage. The vanilla goal aborts on hurt, but we do NOT abort here.
+                // Deal damage
                 if (this.phantom.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
-                    this.phantom.doHurtTarget(serverLevel, target);
+                    boolean hurt = this.phantom.doHurtTarget(serverLevel, target);
+                    if (hurt) {
+                        this.successfulHits++;
+                        if (this.successfulHits >= 3) {
+                            // End the frenzy early after 3 hits
+                            state.setEnrageFrenzyTicks(0);
+                        }
+                    }
                 }
             }
         }

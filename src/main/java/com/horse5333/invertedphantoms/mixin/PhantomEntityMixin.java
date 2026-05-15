@@ -9,13 +9,20 @@ import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.gameevent.DynamicGameEventListener;
 import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import net.minecraft.tags.EntityTypeTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.EntityType;
 
-import java.util.function.BiConsumer;
+
 
 /**
  * Adds Group Bravery (vibration sensing), Night Retreat, Smoke Daze, and Enrage
@@ -90,17 +97,6 @@ public abstract class PhantomEntityMixin implements SmokeDazeable, VibrationSyst
     @Override public Vec3 getScareSourcePos() { return this.scareSourcePos; }
     @Override public void setScareSourcePos(Vec3 pos) { this.scareSourcePos = pos; }
 
-    // ── Register DynamicGameEventListener with the world ─────────────────────
-    // Entity.updateDynamicGameEventListener() is called by the world to add/move/remove
-    // the listener. We override it to forward to our DynamicGameEventListener.
-    @Inject(method = "updateDynamicGameEventListener", at = @At("TAIL"))
-    private void onUpdateDynamicGameEventListener(
-            BiConsumer<DynamicGameEventListener<?>, ServerLevel> action, CallbackInfo ci) {
-        if (((Phantom) (Object) this).level() instanceof ServerLevel serverLevel) {
-            action.accept(this.getDynamicListener(), serverLevel);
-        }
-    }
-
     // ── TICK injection ────────────────────────────────────────────────────────
     @Inject(method = "tick", at = @At("TAIL"))
     private void onTick(CallbackInfo ci) {
@@ -108,6 +104,12 @@ public abstract class PhantomEntityMixin implements SmokeDazeable, VibrationSyst
         if (phantom.level().isClientSide() || !phantom.isAlive()) return;
 
         if (phantom.level() instanceof ServerLevel serverLevel) {
+            // Keep the DynamicGameEventListener registered in the correct chunk section.
+            // DynamicGameEventListener.move() is a no-op if the section hasn't changed,
+            // so calling it every tick is cheap and handles both initial registration
+            // and chunk-section transitions as the phantom moves.
+            this.getDynamicListener().move(serverLevel);
+
             // Advance the vibration pipeline
             VibrationSystem.Ticker.tick(serverLevel, this.vibrationData, this.getVibrationUser());
 
@@ -137,10 +139,24 @@ public abstract class PhantomEntityMixin implements SmokeDazeable, VibrationSyst
             if (this.dazeTicks == 0 && this.enrageFrenzyTicks == 0
                     && this.enrageApproachTicks == 0 && this.smokeImmunityTicks == 0) {
                 if (serverLevel.getGameRules().get(InvertedPhantomsMod.PHANTOM_BEHAVIOR_TWEAKS)) {
-                    if (CampfireBlock.isSmokeyPos(phantom.level(), phantom.blockPosition())) {
+                    boolean isSmokey = false;
+                    BlockPos center = phantom.blockPosition();
+                    for (int dx = -1; dx <= 1; dx++) {
+                        for (int dz = -1; dz <= 1; dz++) {
+                            if (CampfireBlock.isSmokeyPos(phantom.level(), center.offset(dx, 0, dz))) {
+                                isSmokey = true;
+                                break;
+                            }
+                        }
+                        if (isSmokey) break;
+                    }
+
+                    if (isSmokey) {
                         this.dazeTicks = 60;
                         this.smokeImmunityTicks = 400;
                         this.dazeCenter = phantom.blockPosition();
+                        phantom.addEffect(new MobEffectInstance(MobEffects.GLOWING, 60, 0, false, true));
+                        phantom.setTarget(null); // Drop the target to abort the current swoop immediately
                     }
                 }
             }
@@ -153,12 +169,10 @@ public abstract class PhantomEntityMixin implements SmokeDazeable, VibrationSyst
         Phantom phantom = (Phantom) (Object) this;
         GoalSelector selector = ((MobAccessor) phantom).getGoalSelector();
 
-        // 0: night retreat (highest priority — overrides everything)
+        // 0: custom overrides (highest priority — overrides vanilla 1/2/3)
         selector.addGoal(0, new PhantomNightRetreatGoal(phantom));
-        // 1: scared/flee from noise
-        selector.addGoal(1, new PhantomScaredGoal(phantom));
-        // 2/3: existing campfire daze and enrage chain
-        selector.addGoal(2, new PhantomDazeGoal(phantom));
-        selector.addGoal(3, new PhantomEnragedGoal(phantom));
+        selector.addGoal(0, new PhantomScaredGoal(phantom));
+        selector.addGoal(0, new PhantomDazeGoal(phantom));
+        selector.addGoal(0, new PhantomEnragedGoal(phantom));
     }
 }

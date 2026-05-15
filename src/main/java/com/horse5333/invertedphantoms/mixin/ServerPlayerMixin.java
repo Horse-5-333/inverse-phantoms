@@ -30,6 +30,9 @@ public abstract class ServerPlayerMixin implements NarcolepsyTracker {
     private void onTick(CallbackInfo ci) {
         int timeSinceRest = this.getStats().getValue(Stats.CUSTOM.get(Stats.TIME_SINCE_REST));
 
+        // Narcolepsy: if the player has slept recently (within 1 day), they are
+        // "oversleeping" — accumulate ticks unboundedly so the spawner probability
+        // eventually fires. If they've stayed awake 1+ days, reset (normal behaviour).
         if (timeSinceRest >= 24000) {
             this.oversleepTicks = 0;
         } else {

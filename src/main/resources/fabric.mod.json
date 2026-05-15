@@ -3,7 +3,7 @@
 	"id": "inverted_phantoms",
 	"version": "${version}",
 	"name": "Inverted Phantoms",
-	"description": "Phantoms spawn during the day if you've slept for 3 nights in a row.",
+	"description": "Phantoms spawn during the day if you've slept for 3 nights in a row. Gamerules: phantom_behavior_tweaks (vibration / retreat / smoke), phantom_daylight_immunity (sunburn).",
 	"authors": [
 		"Horse_5_333"
 	],
